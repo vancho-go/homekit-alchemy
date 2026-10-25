@@ -1,42 +1,78 @@
+<div align="center">
+
+<img src="images/logo.svg" width="120" alt="HomeKit Alchemy logo">
+
 # HomeKit Alchemy
 
 **Turn any Home Assistant entities into Apple Home devices — exactly the way you want them.**
 
-English · [Русский](README.ru.md)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5?logo=homeassistantcommunitystore&logoColor=white)](https://hacs.xyz)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.10%2B-18BCF2?logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
+[![Version](https://img.shields.io/badge/version-0.1.0-5E5CE6)](https://github.com/vancho-go/homekit-alchemy)
+[![Tests](https://github.com/vancho-go/homekit-alchemy/actions/workflows/tests.yml/badge.svg)](https://github.com/vancho-go/homekit-alchemy/actions/workflows/tests.yml)
+[![Validate](https://github.com/vancho-go/homekit-alchemy/actions/workflows/validate.yml/badge.svg)](https://github.com/vancho-go/homekit-alchemy/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
-<!-- screenshot: hero — one Apple Home card built from several HA entities (lamp + temperature + humidity) -->
+**English** · [Русский](README.ru.md)
 
-Home Assistant's built-in HomeKit Bridge shows one entity as one accessory. HomeKit Alchemy lets you **compose** accessories: take a lamp, add a temperature sensor from another device, a battery from a third one, a "Quiet mode" switch that runs a script — and Apple Home sees **one** device.
+</div>
 
-- **Works with no configuration** for common devices, and lets you change every detail in YAML.
-- **Runs locally.** No cloud, no Homebridge, no extra add-ons. Apple's protocol is spoken by [HAP-python](https://github.com/ikalchev/HAP-python), the same library the built-in bridge uses.
-- **Lives next to the built-in HomeKit Bridge.** Separate port, name and storage: you can move devices over one by one.
-- **Stable in Apple Home.** Numbers of accessories and their parts are stored, so adding or removing blocks never breaks rooms, scenes or automations of other blocks.
+<p align="center">
+  <img src="images/how-it-works.svg" alt="Several Home Assistant entities become one Apple Home device">
+</p>
+
+Home Assistant's built-in HomeKit Bridge shows **one entity as one accessory**. HomeKit Alchemy lets you **compose** accessories: take a lamp, add a temperature sensor from another device, a battery from a third one, a "Quiet mode" switch that runs a script — and Apple Home sees **one** device.
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### 🧩 Compose
+Any blocks from any entities in one Apple Home card.
+
+</td>
+<td width="33%" valign="top">
+
+### 🎛️ Your controls
+Own switches, sliders, mode lists and buttons — backed by any action.
+
+</td>
+<td width="33%" valign="top">
+
+### 📺 TVs & remote
+Inputs, volume and the iPhone remote for any `media_player`.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+### ⚡ Zero config to start
+Common devices just work; YAML changes every detail.
+
+</td>
+<td valign="top">
+
+### 🏠 Fully local
+No cloud, no Homebridge, no add-ons.
+
+</td>
+<td valign="top">
+
+### 🤝 Plays nice
+Runs next to the built-in HomeKit Bridge — move devices one by one.
+
+</td>
+</tr>
+</table>
+
+**[Install](#-installation)** · **[Quick start](#-quick-start)** · **[Configuration](#-configuration)** · **[Extra blocks](#-extra-blocks)** · **[Device types](#-device-types)** · **[Recipes](#-recipes)** · **[Services](#-services-and-events)** · **[Apple Home quirks](#-apple-home-quirks)** · **[Troubleshooting](#-troubleshooting)**
 
 ---
 
-## Contents
+## ✨ What you can build
 
-- [What you can build](#what-you-can-build)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Quick start](#quick-start)
-- [Configuration](#configuration)
-  - [Choosing entities: `filter`](#choosing-entities-filter)
-  - [Tuning a device: `entity_config`](#tuning-a-device-entity_config)
-  - [Values and actions](#values-and-actions)
-  - [Extra blocks: sensors, switches, ranges, modes, buttons](#extra-blocks)
-  - [Device types](#device-types)
-- [Recipes](#recipes)
-- [Services and events](#services-and-events)
-- [Apple Home quirks you should know](#apple-home-quirks-you-should-know)
-- [Troubleshooting](#troubleshooting)
-- [What is tested](#what-is-tested)
-- [Development](#development)
-
----
-
-## What you can build
+<!-- screenshot: a composite card in Apple Home (lamp + temperature + humidity) -->
 
 | You have in Home Assistant | You get in Apple Home |
 |---|---|
@@ -48,15 +84,16 @@ Home Assistant's built-in HomeKit Bridge shows one entity as one accessory. Home
 | a wireless button (`event.*`) | a programmable switch for Apple Home automations |
 | a TV (`media_player`) | an Apple TV-style accessory with inputs, volume and the iPhone remote |
 
-Supported out of the box: lights, switches, outlets, sensors and detectors, thermostats, air conditioners, water heaters, blinds, windows, doors, garage doors, fans, air purifiers, humidifiers and dehumidifiers, locks, valves and sprinklers, security systems, scripts, scenes, buttons and TVs. See [Device types](#device-types).
+Supported out of the box: lights, switches, outlets, sensors and detectors, thermostats, air conditioners, water heaters, blinds, windows, doors, garage doors, fans, air purifiers, humidifiers and dehumidifiers, locks, valves and sprinklers, security systems, scripts, scenes, buttons and TVs.
 
-## Requirements
+---
 
-- Home Assistant **2026.10** or newer.
-- An iPhone / iPad on the **same local network** as Home Assistant.
-- Optional: an Apple home hub (HomePod or Apple TV) — needed by Apple for remote access, for Apple Home automations and for button events. Everything else works without it.
+## 📦 Installation
 
-## Installation
+**Requirements:** Home Assistant **2026.10+**, an iPhone / iPad on the **same local network**.
+
+> [!TIP]
+> An Apple home hub (HomePod or Apple TV) is optional. Apple needs it only for remote access, Apple Home automations and button events — everything else works without it.
 
 ### HACS (recommended)
 
@@ -64,46 +101,56 @@ Supported out of the box: lights, switches, outlets, sensors and detectors, ther
 2. Find **HomeKit Alchemy** in HACS and install it.
 3. Restart Home Assistant.
 
-### Manual
+<details>
+<summary><b>Manual installation</b></summary>
 
 Copy `custom_components/homekit_alchemy` into `<config>/custom_components/` and restart Home Assistant.
 
-## Quick start
+</details>
 
-1. Add to `configuration.yaml` (or put it in its own file with `homekit_alchemy: !include homekit_alchemy.yaml`):
+---
 
-   ```yaml
-   homekit_alchemy:
-     filter:
-       include_entities:
-         - light.desk_lamp
-         - climate.living_room_ac
-   ```
+## 🚀 Quick start
 
-2. Restart Home Assistant. The integration is created automatically, and a notification shows the **pairing code**.
+**1.** Add to `configuration.yaml` (or keep it in its own file with `homekit_alchemy: !include homekit_alchemy.yaml`):
 
-   <!-- screenshot: HA notification with the pairing code -->
+```yaml
+homekit_alchemy:
+  filter:
+    include_entities:
+      - light.desk_lamp
+      - climate.living_room_ac
+```
 
-3. On the iPhone: **Home** → **+** → **Add Accessory** → **More options…** → **HomeKit Alchemy** → enter the code. Apple warns that the accessory is not certified — tap **Add Anyway**.
+**2.** Restart Home Assistant. The integration is created automatically and a notification shows the **pairing code**.
 
-   <!-- screenshot: Add Accessory list showing "HomeKit Alchemy" -->
+<!-- screenshot: HA notification with the pairing code -->
 
-4. Done. Change the YAML at any time and apply it without restarting: **Developer tools → YAML → HomeKit Alchemy**.
+**3.** On the iPhone: **Home** → **+** → **Add Accessory** → **More options…** → **HomeKit Alchemy** → enter the code.
 
-## Configuration
+<!-- screenshot: Add Accessory list showing "HomeKit Alchemy" -->
 
-Full structure (everything is optional):
+> [!NOTE]
+> Apple warns that the accessory is not certified — that is expected for every non-commercial HomeKit project. Tap **Add Anyway**.
+
+**4.** Done. Change the YAML any time and apply it without a restart: **Developer tools → YAML → HomeKit Alchemy**.
+
+---
+
+## 🔧 Configuration
+
+Everything is optional:
 
 ```yaml
 homekit_alchemy:
   name: HomeKit Alchemy      # bridge name in Apple Home
-  port: 21100                # bridge port; TVs and lists use the next ports (21101, 21102…)
+  port: 21100                # bridge port; TVs and lists use the next ones (21101, 21102…)
   filter: { … }              # which entities to show
   entity_config:             # how to show them
     light.desk_lamp: { … }
 ```
 
-### Choosing entities: `filter`
+### Choosing entities — `filter`
 
 Same rules as Home Assistant's own filters:
 
@@ -117,13 +164,13 @@ homekit_alchemy:
     exclude_entity_globs: ["*_child_lock"]
 ```
 
-- Everything listed in `entity_config` is shown even if the filter does not mention it (unless it is explicitly excluded).
-- Hidden entities and configuration/diagnostic entities are only shown when included by name.
-- Entities that cannot be shown (for example a `sensor` measuring power) are skipped silently when they come from a domain-wide include, and with a warning in the log when you named them explicitly.
+- Everything in `entity_config` is shown even if the filter does not mention it (unless explicitly excluded).
+- Hidden and configuration / diagnostic entities are shown only when included by name.
+- Entities that cannot be shown (e.g. a power `sensor`) are skipped silently from a domain-wide include, with a log warning when named explicitly.
 
-### Tuning a device: `entity_config`
+### Tuning a device — `entity_config`
 
-The key is the **main entity** of the device. Everything else is attached to it.
+The key is the **main entity** of the device; everything else is attached to it.
 
 ```yaml
 homekit_alchemy:
@@ -138,11 +185,12 @@ homekit_alchemy:
       buttons: [ … ]
 ```
 
-Renaming the entity in Home Assistant later does not break the device in Apple Home: it is tracked by the entity's internal id.
+> [!TIP]
+> Renaming the entity in Home Assistant later does not break the device in Apple Home — it is tracked by the entity's internal id.
 
 ### Values and actions
 
-Anywhere a value is expected you can write:
+Anywhere a **value** is expected:
 
 ```yaml
 state: sensor.reed_switch                                   # state of an entity
@@ -150,7 +198,7 @@ state: { entity: climate.ac, attribute: current_humidity }  # an attribute
 state: "{{ is_state('switch.beeper', 'off') }}"             # a template
 ```
 
-Anywhere an action is expected:
+Anywhere an **action** is expected:
 
 ```yaml
 turn_on:
@@ -159,11 +207,15 @@ turn_on:
   data: { preset_mode: quiet }
 ```
 
-In actions of `ranges` you can use `{{ value }}`, in actions of `modes` — `{{ option }}`.
+Actions of `ranges` can use `{{ value }}`, actions of `modes` — `{{ option }}`.
 
-### Extra blocks
+---
 
-#### `sensors` — readings from other entities
+## 🧩 Extra blocks
+
+### `sensors` — readings from other entities
+
+<!-- screenshot: a card with temperature, humidity and battery blocks -->
 
 ```yaml
 sensors:
@@ -176,18 +228,25 @@ sensors:
     entity: sensor.motion_battery
 ```
 
+<details>
+<summary><b>All sensor types</b></summary>
+
 | `type` | Shows | Notes |
 |---|---|---|
 | `temperature`, `humidity`, `illuminance` | value | °F is converted automatically |
-| `co2` | CO₂ level | marked "abnormal" above 1000 ppm |
+| `co2` | CO₂ level | "abnormal" above 1000 ppm |
 | `pm25`, `pm10` | air quality + density | quality levels as in Home Assistant |
 | `motion`, `occupancy`, `contact`, `leak`, `smoke`, `co` | detector | any on/off-like value works |
-| `battery` | battery level, low battery below 20 % | Apple shows it on sensor devices, not on lamps |
+| `battery` | battery level, low below 20 % | shown on sensor devices, not on lamps |
 | `filter_life`, `filter_change` | filter status | "Replace filter soon" below 10 % |
 
-Each sensor takes `entity` (+ optional `attribute`) or `template`, and optional `name` / `id`.
+Each sensor takes `entity` (+ optional `attribute`) or `template`, plus optional `name` / `id`.
 
-#### `switches` — your own toggles
+</details>
+
+### `switches` — your own toggles
+
+<!-- screenshot: an air conditioner card with "Display" / "Dry" switches -->
 
 ```yaml
 switches:
@@ -201,7 +260,9 @@ switches:
 
 Without `state` the switch remembers the last command.
 
-#### `ranges` — any number as a slider
+### `ranges` — any number as a slider
+
+<!-- screenshot: a range shown as a dimmer -->
 
 Shown as a dimmable lamp: 0 % = `min`, 100 % = `max`. Turning the "lamp" off sets `min`, turning it on restores the previous value.
 
@@ -217,7 +278,9 @@ ranges:
     set: { action: media_player.volume_set, entity_id: media_player.speaker, data: { volume_level: "{{ value }}" } }
 ```
 
-#### `modes` — pick one of a list
+### `modes` — pick one of a list
+
+<!-- screenshot: the three mode displays side by side (switches / slider / television) -->
 
 ```yaml
 modes:
@@ -235,15 +298,16 @@ modes:
 
 | `display` | Looks like | Best for |
 |---|---|---|
-| `switches` (default) | one labelled switch per option | any number of options; easy for scenes and Siri |
+| `switches` *(default)* | one labelled switch per option | any number of options; easy for scenes and Siri |
 | `slider` | a lamp slider with steps | ordered options (low → high) |
-| `television` | a real pick-one list | when you need a list; it becomes a **separate accessory** with its own pairing code |
+| `television` | a real pick-one list | when you need a list — it becomes a **separate accessory** with its own pairing code |
 
-<!-- screenshot: the three mode displays side by side -->
+> [!WARNING]
+> YAML turns bare `on` / `off` / `yes` / `no` into true / false. In `options` they are converted back to `"on"` / `"off"`; anywhere else, put them in quotes.
 
-> YAML turns bare `on` / `off` / `yes` / `no` into booleans. In `options` they are converted back to `"on"` / `"off"`; elsewhere, quote them.
+### `buttons` — events for Apple Home automations
 
-#### `buttons` — events for Apple Home automations
+<!-- screenshot: button blocks "Button 1 — Single press" -->
 
 ```yaml
 buttons:
@@ -257,17 +321,25 @@ buttons:
     single: arrow_left_click
 ```
 
-Each button becomes an Apple "programmable switch" with single / double / long press. Apple Home needs a **home hub** to run automations from buttons. An `event.*` entity can also be shown on its own through `filter`: press kinds are guessed from its `event_types`.
+Each button becomes an Apple "programmable switch" with single / double / long press. An `event.*` entity can also be shown on its own through `filter` — press kinds are guessed from its `event_types`.
 
-### Device types
+> [!IMPORTANT]
+> Apple Home runs automations from buttons only with a **home hub**.
 
-The type is chosen automatically. Change it with `type:` when you want something else.
+---
+
+## 📚 Device types
+
+The type is chosen automatically; set `type:` to show an entity differently.
+
+<details open>
+<summary><b>Domains, defaults and options</b></summary>
 
 | Domain | Default in Apple Home | Other `type:` values | Extra options |
 |---|---|---|---|
 | `light` | lightbulb (brightness, color, white temperature) | `switch`, `outlet` | `state`, `turn_on`, `turn_off` |
 | `switch`, `input_boolean` | switch | `outlet`, `light`, `garage_door`, `window_covering`, `window`, `door`, `valve`, `sprinkler`, `shower`, `faucet` | `state`, `turn_on`, `turn_off`, cover options |
-| `sensor` | by `device_class` (see sensor types) | any sensor type except `battery` | `state` |
+| `sensor` | by `device_class` | any sensor type except `battery` | `state` |
 | `binary_sensor` | by `device_class` (`door`/`window` → contact, `moisture` → leak, …) | any detector type | `state` |
 | `climate` | `heater_cooler` if it can cool, otherwise `thermostat` | `thermostat`, `heater_cooler` | `current_temperature`, `current_humidity`¹, `min_temp`, `max_temp`, `temperature_step` |
 | `water_heater` | thermostat (off / heat) | — | `current_temperature`, `min_temp`, `max_temp` |
@@ -277,15 +349,25 @@ The type is chosen automatically. Change it with `type:` when you want something
 | `lock` | lock | — | `code` |
 | `valve` | valve | `sprinkler`, `shower`, `faucet` | — |
 | `alarm_control_panel` | security system (home / away / night / off) | — | `code` |
-| `media_player` | TV if it is a TV/receiver or can select sources, otherwise a power switch | `television`, `receiver`, `switch` | `sources`, `remote_keys` |
+| `media_player` | TV if it is a TV / receiver or can select sources, otherwise a power switch | `television`, `receiver`, `switch` | `sources`, `remote_keys` |
 | `script`, `scene`, `button`, `input_button` | a switch that runs it and turns itself off | — | — |
 | `event` | programmable switch | — | `buttons` |
 
 ¹ only for `thermostat`; for `heater_cooler` add `sensors: - type: humidity`.
 
-**Climate.** Air conditioners get a fan speed control inside the card. `dry` and `fan_only` have no Apple equivalent — add them as `switches` (see [recipes](#an-air-conditioner-with-extra-modes)).
+</details>
 
-**TVs.** A TV is a separate accessory (Apple requires it): add it in Apple Home with its own code from the notification. Inputs come from `source_list`; rename, reorder or hide them with `sources:` (same format as `options`). The iPhone remote (Control Center → Apple TV Remote) sends play/pause and next/previous to the player; arrows, OK, back and info run your `remote_keys:` actions or fire an event:
+### ❄️ Climate
+
+<!-- screenshot: air conditioner card with the fan speed control -->
+
+Air conditioners get a fan speed control inside the card. `dry` and `fan_only` have no Apple equivalent — add them as `switches` ([recipe](#an-air-conditioner-with-extra-modes)).
+
+### 📺 TVs
+
+<!-- screenshot / GIF: TV card with inputs + iPhone remote -->
+
+A TV is a **separate accessory** (Apple requires it): add it in Apple Home with its own code from the notification. Inputs come from `source_list`; rename, reorder or hide them with `sources:`. The iPhone remote (Control Center → Apple TV Remote) sends play/pause and next/previous to the player; arrows, OK, back and info run your `remote_keys:` actions or fire an event.
 
 ```yaml
 media_player.living_room_tv:
@@ -296,11 +378,18 @@ media_player.living_room_tv:
     arrow_up: { action: remote.send_command, entity_id: remote.living_room_tv, data: { command: UP } }
 ```
 
-Key names: `arrow_up`, `arrow_down`, `arrow_left`, `arrow_right`, `select`, `back`, `exit`, `information`, `play_pause`, `next_track`, `previous_track`, `rewind`, `fast_forward`.
+<details>
+<summary><b>Remote key names</b></summary>
 
-## Recipes
+`arrow_up`, `arrow_down`, `arrow_left`, `arrow_right`, `select`, `back`, `exit`, `information`, `play_pause`, `next_track`, `previous_track`, `rewind`, `fast_forward`
 
-### A lamp that also shows the room climate
+</details>
+
+---
+
+## 🧪 Recipes
+
+#### A lamp that also shows the room climate
 
 ```yaml
 light.desk_lamp:
@@ -310,7 +399,7 @@ light.desk_lamp:
     - { type: humidity, entity: sensor.room_humidity }
 ```
 
-### An air conditioner with extra modes
+#### An air conditioner with extra modes
 
 ```yaml
 climate.living_room_ac:
@@ -326,7 +415,7 @@ climate.living_room_ac:
       turn_off: { action: climate.set_hvac_mode, entity_id: climate.living_room_ac, data: { hvac_mode: "off" } }
 ```
 
-### A gate on a relay with a reed switch
+#### A gate on a relay with a reed switch
 
 ```yaml
 switch.gate_relay:
@@ -338,7 +427,7 @@ switch.gate_relay:
   obstruction: binary_sensor.gate_photocell
 ```
 
-### An air purifier with air quality and filter
+#### An air purifier with air quality and filter
 
 ```yaml
 fan.purifier:
@@ -348,7 +437,7 @@ fan.purifier:
     - { type: filter_life, entity: sensor.purifier_filter_life }
 ```
 
-### A weather station
+#### A weather station
 
 ```yaml
 sensor.outdoor_temperature:
@@ -358,36 +447,51 @@ sensor.outdoor_temperature:
     - { type: battery, entity: sensor.outdoor_battery }
 ```
 
-## Services and events
+---
+
+## 🧰 Services and events
 
 | Service | What it does |
 |---|---|
-| `homekit_alchemy.reload` | re-reads the YAML without restarting Home Assistant; invalid YAML is rejected and the running config stays |
-| `homekit_alchemy.reset_accessory` | makes Apple Home forget the given devices and add them again (fixes a stale look, see below). Their room and scenes in Apple Home have to be set again |
-| `homekit_alchemy.unpair` | forgets every paired iPhone/iPad, for the bridge and all separate accessories |
+| `homekit_alchemy.reload` | re-reads the YAML without restarting; invalid YAML is rejected and the running config stays |
+| `homekit_alchemy.reset_accessory` | makes Apple Home forget the given devices and add them again — fixes a stale look. Their room and scenes have to be set again |
+| `homekit_alchemy.unpair` | forgets every paired iPhone / iPad, for the bridge and all separate accessories |
 
-Event `homekit_alchemy_tv_remote_key_pressed` (`entity_id`, `key`) — a key of the iPhone remote that has no `remote_keys:` action.
+**Event** `homekit_alchemy_tv_remote_key_pressed` (`entity_id`, `key`) — an iPhone remote key without a `remote_keys:` action.
 
-**Diagnostics:** Settings → Devices & services → HomeKit Alchemy → ⋮ → Download diagnostics. Pairing codes and lock codes are never included.
+**Diagnostics:** Settings → Devices & services → HomeKit Alchemy → ⋮ → **Download diagnostics**. Pairing codes and lock codes are never included.
 
-## Apple Home quirks you should know
+---
 
-- **Rooms cannot be set from YAML.** Apple's protocol for bridges has no room field. Choose the room once in Apple Home; it survives restarts, reloads and updates.
-- **Apple Home caches how a device looks.** New blocks, renames and new values appear by themselves, but if blocks are **regrouped** (for example a block that used to be linked to another), the old look can stay. Use `homekit_alchemy.reset_accessory` for that device.
-- **Batteries** are shown on sensor devices ("Status → Battery"), but not on lamps.
-- **Fans inside a card are not labelled**, so mode sliders are lamps, not fans. **Oscillation** is not shown for climate fans and some fans.
-- **TVs and `display: television` lists** are separate accessories with their own pairing code and room.
-- **Robot vacuums** can only be added to Apple Home through Matter — not supported here. **Cameras** are not supported yet; keep them in the built-in HomeKit Bridge.
-- Names: Apple shows non-Latin names fine. In the "Add Accessory" list they are transliterated (e.g. "Gostinaya TV").
+## 🍏 Apple Home quirks
 
-## Troubleshooting
+> [!IMPORTANT]
+> **Rooms cannot be set from YAML.** Apple's protocol for bridges has no room field. Pick the room once in Apple Home — it survives restarts, reloads and updates.
 
-- **The bridge is not found when adding.** The iPhone must be on the same network. Home Assistant must be reachable on **TCP 21100+** (bridge port and the next ones for TVs) and **UDP 5353** (mDNS). Avoid putting Home Assistant and the iPhone in different VLANs without an mDNS reflector.
-- **"Not responding".** Check that the main entity is not `unavailable`. Then look at the log (`custom_components.homekit_alchemy`) and download diagnostics.
-- **A device looks wrong after a change.** Run `homekit_alchemy.reset_accessory` for it.
-- **Starting over.** Remove the bridge in Apple Home, delete the integration in Home Assistant (this deletes its pairing data), add it again.
+> [!TIP]
+> **Apple Home caches how a device looks.** New blocks, renames and values appear by themselves, but if blocks are *regrouped* the old look can stay. Run `homekit_alchemy.reset_accessory` for that device.
 
-Debug log:
+- **Batteries** are shown on sensor devices (Status → Battery), not on lamps.
+- **Fans inside a card are not labelled** — that is why mode sliders are lamps. **Oscillation** is hidden for climate fans and some fans.
+- **TVs and `display: television` lists** are separate accessories with their own code and room.
+- **Robot vacuums** reach Apple Home only through Matter — not supported. **Cameras** are not supported yet; keep them in the built-in HomeKit Bridge.
+- Non-Latin names are fine in Apple Home; in the "Add Accessory" list they are transliterated (e.g. "Gostinaya TV").
+
+---
+
+## 🩺 Troubleshooting
+
+<details>
+<summary><b>The bridge is not found when adding</b></summary>
+
+The iPhone must be on the same network. Home Assistant must be reachable on **TCP 21100+** (bridge port and the next ones for TVs) and **UDP 5353** (mDNS). Avoid putting Home Assistant and the iPhone in different VLANs without an mDNS reflector.
+
+</details>
+
+<details>
+<summary><b>"Not responding"</b></summary>
+
+Check that the main entity is not `unavailable`. Then look at the log and download diagnostics. Debug log:
 
 ```yaml
 logger:
@@ -395,10 +499,28 @@ logger:
     custom_components.homekit_alchemy: debug
 ```
 
-## What is tested
+</details>
+
+<details>
+<summary><b>A device looks wrong after a change</b></summary>
+
+Run `homekit_alchemy.reset_accessory` for it.
+
+</details>
+
+<details>
+<summary><b>Starting over</b></summary>
+
+Remove the bridge in Apple Home, delete the integration in Home Assistant (this deletes its pairing data), add it again.
+
+</details>
+
+---
+
+## ✅ What is tested
 
 | Device type | Real device | Demo device | Automated tests |
-|---|---|---|---|
+|---|:---:|:---:|:---:|
 | Lights, switches, sensors, composite devices | ✅ | ✅ | ✅ |
 | Thermostats, air conditioners | ✅ | | ✅ |
 | Covers, windows, doors, garage doors | | ✅ | ✅ |
@@ -407,18 +529,10 @@ logger:
 | Ranges, modes, buttons, TV lists | | ✅ | ✅ |
 | TVs (`media_player`) | | ✅ | ✅ |
 
-Tested on Home Assistant 2026.10 and iOS 26. Reports from your devices are very welcome — open an issue with diagnostics attached.
+Tested on Home Assistant 2026.10 and iOS 26. Reports from your devices are very welcome — [open an issue](https://github.com/vancho-go/homekit-alchemy/issues) with diagnostics attached.
 
-## Development
+---
 
-Run the tests:
+## 📄 License
 
-```bash
-python -m venv .venv
-.venv/bin/pip install -r requirements_test.txt
-.venv/bin/python -m pytest
-```
-
-## License
-
-MIT
+[MIT](LICENSE)

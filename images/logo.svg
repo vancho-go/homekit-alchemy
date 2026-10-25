@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5E5CE6"/><stop offset="1" stop-color="#BF5AF2"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD60A"/><stop offset="1" stop-color="#FF9F0A"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+  <!-- house whose roof is the flask neck -->
+  <path d="M128 44 l18 0 v26 l52 48 v86 a10 10 0 0 1 -10 10 h-120 a10 10 0 0 1 -10 -10 v-86 l52 -48 v-26 z"
+        fill="none" stroke="#fff" stroke-width="12" stroke-linejoin="round"/>
+  <path d="M110 44 h36" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+  <!-- glowing potion level -->
+  <path d="M70 162 q29 -14 58 0 t58 0 v40 a6 6 0 0 1 -6 6 h-104 a6 6 0 0 1 -6 -6 z" fill="url(#glow)"/>
+  <circle cx="104" cy="140" r="7" fill="#FFD60A"/>
+  <circle cx="148" cy="124" r="5" fill="#FFD60A" fill-opacity="0.85"/>
+  <circle cx="126" cy="104" r="3.5" fill="#FFD60A" fill-opacity="0.7"/>
+</svg>

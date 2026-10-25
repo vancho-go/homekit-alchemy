@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 280" width="840" height="280" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5E5CE6"/><stop offset="1" stop-color="#BF5AF2"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD60A"/><stop offset="1" stop-color="#FF9F0A"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8E8E93"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="840" height="280" rx="24" fill="#F2F2F7"/>
+
+  <!-- Home Assistant entities -->
+  <text x="40" y="44" font-size="15" font-weight="600" fill="#6E6E73">Home Assistant</text>
+  <g font-size="15" fill="#1C1C1E">
+    <rect x="40" y="62" width="250" height="48" rx="12" fill="#fff" stroke="#D1D1D6"/>
+    <circle cx="66" cy="86" r="11" fill="#FFCC00"/>
+    <text x="88" y="91">light.desk_lamp</text>
+    <rect x="40" y="122" width="250" height="48" rx="12" fill="#fff" stroke="#D1D1D6"/>
+    <circle cx="66" cy="146" r="11" fill="#FF6B5E"/>
+    <text x="88" y="151">sensor.room_temperature</text>
+    <rect x="40" y="182" width="250" height="48" rx="12" fill="#fff" stroke="#D1D1D6"/>
+    <circle cx="66" cy="206" r="11" fill="#40C8E0"/>
+    <text x="88" y="211">sensor.room_humidity</text>
+  </g>
+
+  <!-- arrows into the flask -->
+  <g stroke="#8E8E93" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M298 86 C340 86 340 140 368 146" marker-end="url(#arrow)"/>
+    <path d="M298 146 L368 146" marker-end="url(#arrow)"/>
+    <path d="M298 206 C340 206 340 152 368 146" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- the logo -->
+  <g transform="translate(380 82) scale(0.5)">
+    <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+    <path d="M128 44 l18 0 v26 l52 48 v86 a10 10 0 0 1 -10 10 h-120 a10 10 0 0 1 -10 -10 v-86 l52 -48 v-26 z" fill="none" stroke="#fff" stroke-width="12" stroke-linejoin="round"/>
+    <path d="M110 44 h36" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+    <path d="M70 162 q29 -14 58 0 t58 0 v40 a6 6 0 0 1 -6 6 h-104 a6 6 0 0 1 -6 -6 z" fill="url(#glow)"/>
+    <circle cx="104" cy="140" r="7" fill="#FFD60A"/>
+    <circle cx="148" cy="124" r="5" fill="#FFD60A" fill-opacity="0.85"/>
+  </g>
+  <text x="444" y="236" font-size="15" font-weight="600" fill="#6E6E73" text-anchor="middle">HomeKit Alchemy</text>
+
+  <path d="M520 146 L568 146" stroke="#8E8E93" stroke-width="3" fill="none" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+  <!-- Apple Home card -->
+  <text x="582" y="44" font-size="15" font-weight="600" fill="#6E6E73">Apple Home</text>
+  <rect x="582" y="62" width="218" height="168" rx="22" fill="#fff" stroke="#D1D1D6"/>
+  <circle cx="618" cy="100" r="20" fill="#FFCC00"/>
+  <path d="M611 92 a8 8 0 1 1 14 0 c-2 3 -3 5 -3 8 h-8 c0 -3 -1 -5 -3 -8 z M614 103 h8 v3 h-8 z" fill="#fff"/>
+  <text x="602" y="150" font-size="19" font-weight="700" fill="#1C1C1E">Desk lamp</text>
+  <text x="602" y="176" font-size="15" fill="#6E6E73">On · 80%</text>
+  <circle cx="608" cy="201" r="6" fill="#FF6B5E"/>
+  <text x="620" y="206" font-size="15" fill="#6E6E73">21.5°</text>
+  <circle cx="680" cy="201" r="6" fill="#40C8E0"/>
+  <text x="692" y="206" font-size="15" fill="#6E6E73">45%</text>
+</svg>
