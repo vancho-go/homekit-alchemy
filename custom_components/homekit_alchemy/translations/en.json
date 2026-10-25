@@ -1,0 +1,33 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HomeKit Alchemy",
+        "description": "Create a HomeKit Alchemy bridge for Apple Home."
+      }
+    },
+    "abort": {
+      "already_configured": "HomeKit Alchemy bridge is already configured."
+    }
+  },
+  "services": {
+    "reload": {
+      "name": "Reload",
+      "description": "Reload the HomeKit Alchemy YAML configuration without restarting Home Assistant."
+    },
+    "reset_accessory": {
+      "name": "Reset accessory",
+      "description": "Make Apple Home forget the accessory and add it again, so it re-reads its structure. Its room and scenes in Apple Home have to be set again.",
+      "fields": {
+        "entity_id": {
+          "name": "Entities",
+          "description": "Main entities of the accessories to reset."
+        }
+      }
+    },
+    "unpair": {
+      "name": "Unpair",
+      "description": "Forget every paired iPhone/iPad of the HomeKit Alchemy bridge and its standalone accessories, so they can be added to Apple Home again."
+    }
+  }
+}

@@ -1,0 +1,6 @@
+# Pinned to the Home Assistant version we target (2026.10.2).
+# This package pulls in homeassistant itself and the pytest plugins it needs.
+pytest-homeassistant-custom-component==0.13.373
+
+# Same version Home Assistant core pins for its built-in HomeKit Bridge.
+HAP-python==5.0.0

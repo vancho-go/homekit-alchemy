@@ -1,0 +1,11 @@
+reload:
+
+reset_accessory:
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+unpair:
