@@ -97,9 +97,18 @@ Supported out of the box: lights, switches, outlets, sensors and detectors, ther
 
 ### HACS (recommended)
 
-1. HACS → ⋮ → **Custom repositories** → add `https://github.com/vancho-go/homekit-alchemy`, category **Integration**.
-2. Find **HomeKit Alchemy** in HACS and install it.
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=vancho-go&repository=homekit-alchemy&category=integration)
+
+1. Click the button above — it opens HomeKit Alchemy in HACS of your Home Assistant.
+2. Click **Download**.
 3. Restart Home Assistant.
+
+<details>
+<summary><b>Without the button</b></summary>
+
+HACS → ⋮ → **Custom repositories** → add `https://github.com/vancho-go/homekit-alchemy`, category **Integration** → find **HomeKit Alchemy** → **Download** → restart Home Assistant.
+
+</details>
 
 <details>
 <summary><b>Manual installation</b></summary>

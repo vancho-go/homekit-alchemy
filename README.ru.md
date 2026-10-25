@@ -97,9 +97,18 @@
 
 ### Через HACS (рекомендуется)
 
-1. HACS → ⋮ → **Пользовательские репозитории** → добавьте `https://github.com/vancho-go/homekit-alchemy`, категория **Интеграция**.
-2. Найдите **HomeKit Alchemy** в HACS и установите.
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=vancho-go&repository=homekit-alchemy&category=integration)
+
+1. Нажмите кнопку выше — она откроет HomeKit Alchemy в HACS вашего Home Assistant.
+2. Нажмите **Скачать**.
 3. Перезапустите Home Assistant.
+
+<details>
+<summary><b>Без кнопки</b></summary>
+
+HACS → ⋮ → **Пользовательские репозитории** → добавьте `https://github.com/vancho-go/homekit-alchemy`, категория **Интеграция** → найдите **HomeKit Alchemy** → **Скачать** → перезапустите Home Assistant.
+
+</details>
 
 <details>
 <summary><b>Установка вручную</b></summary>
