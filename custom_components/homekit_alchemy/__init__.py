@@ -20,6 +20,7 @@ from .config.models import AlchemyConfig
 from .config.schema import CONFIG_SCHEMA, alchemy_config
 from .const import DOMAIN
 from .manager import BridgeManager
+from .pairing import PairingQRView
 
 __all__ = ["CONFIG_SCHEMA"]
 
@@ -36,6 +37,7 @@ RESET_SCHEMA = vol.Schema({vol.Required("entity_id"): cv.entity_ids})
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Read YAML, create the config entry on first run, register homekit_alchemy.reload."""
     hass.data[DATA_CONFIG] = config.get(DOMAIN)
+    hass.http.register_view(PairingQRView())
     if DOMAIN in config and not hass.config_entries.async_entries(DOMAIN):
         hass.async_create_task(
             hass.config_entries.flow.async_init(DOMAIN, context={"source": SOURCE_IMPORT}, data={})

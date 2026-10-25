@@ -41,6 +41,7 @@ class IdStorage:
         self.aids: dict[str, int] = {}
         self.iids: dict[str, dict[str, int]] = {}
         self.pincode: str | None = None
+        self.setup_id: str | None = None  # part of the pairing QR code
         # Standalone accessories of this bridge: device key -> {"slot": n, "port": p}
         self.standalone: dict[str, dict[str, int]] = {}
         self._loaded = False
@@ -52,6 +53,7 @@ class IdStorage:
         self.aids = data.get("aids", {})
         self.iids = data.get("iids", {})
         self.pincode = data.get("pincode")
+        self.setup_id = data.get("setup_id")
         self.standalone = data.get("standalone", {})
         self._loaded = True
 
@@ -96,7 +98,7 @@ class IdStorage:
 
     @callback
     def _data(self) -> dict[str, Any]:
-        return {"aids": self.aids, "iids": self.iids, "pincode": self.pincode, "standalone": self.standalone}
+        return {"aids": self.aids, "iids": self.iids, "pincode": self.pincode, "setup_id": self.setup_id, "standalone": self.standalone}
 
 
 class StableIIDManager(IIDManager):

@@ -9,7 +9,7 @@ from typing import Any
 
 from pyhap.accessory import Bridge
 from pyhap.const import STANDALONE_AID
-from pyhap.util import generate_pincode
+from pyhap.util import generate_pincode, generate_setup_id
 
 from homeassistant.components import network, persistent_notification, zeroconf
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
@@ -21,6 +21,7 @@ from .hap.accessory import AlchemyAccessory
 from .hap.driver import AlchemyDriver, create_driver
 from .hap.ids import IdStorage, StableIIDManager
 from .model.device import Block, Device
+from .pairing import async_forget_qr, async_publish_qr
 from .runtime.commands import async_execute
 from .runtime.sources import HassStateView
 
@@ -68,6 +69,8 @@ class HapServer:
         await self.ids.async_load()
         if self.ids.pincode is None:
             self.ids.pincode = generate_pincode().decode()
+        if self.ids.setup_id is None:
+            self.ids.setup_id = generate_setup_id()
         persist_file = self.hass.config.path(".storage", f"{DOMAIN}.{self.storage_key}.state")
         driver, loaded = await self.hass.async_add_executor_job(
             lambda: create_driver(
@@ -83,6 +86,8 @@ class HapServer:
             )
         )
         self.driver = driver
+        # HAP-python does not persist the setup id; keep the QR code stable across restarts.
+        driver.state.setup_id = self.ids.setup_id
 
         if self.standalone:
             accessories = [make_accessory(driver, self.devices[0], STANDALONE_AID, self.ids)]
@@ -121,7 +126,7 @@ class HapServer:
             if driver.accessory is not None:  # a failed start never got this far
                 await driver.async_stop()
         await self.ids.async_save()
-        persistent_notification.async_dismiss(self.hass, self.storage_key)
+        self._dismiss_pairing()
 
     async def async_reset(
         self, keys: set[str], make_accessory: AccessoryFactory
@@ -183,7 +188,7 @@ class HapServer:
     @callback
     def _on_paired(self, paired: bool) -> None:
         if paired:
-            persistent_notification.async_dismiss(self.hass, self.storage_key)
+            self._dismiss_pairing()
         else:
             self._show_pairing()
 
@@ -192,13 +197,20 @@ class HapServer:
         assert self.driver is not None
         pin = self.driver.state.pincode.decode()
         _LOGGER.info("HomeKit Alchemy %s pairing code: %s", self.name, pin)
+        qr_url = async_publish_qr(self.hass, self.storage_key, self.driver.accessory.xhm_uri())
         persistent_notification.async_create(
             self.hass,
-            f"Add **{self.name}** in the Home app "
-            f"(Add Accessory → More options) with code:\n### {pin}",
+            f"Add **{self.name}** to Apple Home: **+** → **Add Accessory**, then scan the code\n\n"
+            f"![pairing QR code]({qr_url})\n\n"
+            f"or choose **More options…** and enter:\n### {pin}",
             "HomeKit Alchemy pairing",
             self.storage_key,
         )
+
+    @callback
+    def _dismiss_pairing(self) -> None:
+        persistent_notification.async_dismiss(self.hass, self.storage_key)
+        async_forget_qr(self.hass, self.storage_key)
 
 
 class BridgeManager:

@@ -4,3 +4,7 @@ pytest-homeassistant-custom-component==0.13.373
 
 # Same version Home Assistant core pins for its built-in HomeKit Bridge.
 HAP-python==5.0.0
+
+# Pairing QR code (same as the built-in HomeKit Bridge)
+PyQRCode==1.2.1
+base36==0.1.1

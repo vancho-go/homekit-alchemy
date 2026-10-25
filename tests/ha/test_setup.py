@@ -408,3 +408,25 @@ async def test_media_player_television(hass: HomeAssistant, bridge_env: None) ->
     await hass.async_block_till_done()
     assert select[0].data == {"entity_id": "media_player.tv", "source": "HDMI 1"}
     assert events == [{"entity_id": "media_player.tv", "key": "arrow_up"}]
+
+
+async def test_pairing_notification_has_qr_and_code(
+    hass: HomeAssistant, bridge_env: None, hass_client_no_auth
+) -> None:
+    from homeassistant.components import persistent_notification
+
+    _states(hass)
+    manager = await _setup(hass, {"port": 51870, "entity_config": {LIGHT: {}}})
+    server = manager.servers[0]
+    notifications = persistent_notification._async_get_or_create_notifications(hass)
+    message = notifications[server.storage_key]["message"]
+    assert server.ids.pincode in message
+    url = message.split("](")[1].split(")")[0]
+    assert url.startswith(f"/api/{DOMAIN}/pairingqr?")
+    assert manager.driver.state.setup_id == server.ids.setup_id
+
+    client = await hass_client_no_auth()
+    response = await client.get(url)
+    assert response.status == 200 and response.content_type == "image/svg+xml"
+    assert (await client.get(url[:-4] + "0000")).status == 401
+    assert (await client.get(f"/api/{DOMAIN}/pairingqr")).status == 401

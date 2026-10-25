@@ -131,11 +131,11 @@ homekit_alchemy:
       - climate.living_room_ac
 ```
 
-**2.** Restart Home Assistant. The integration is created automatically and a notification shows the **pairing code**.
+**2.** Restart Home Assistant. The integration is created automatically and a notification shows a **QR code** and the **pairing code**.
 
 <!-- screenshot: HA notification with the pairing code -->
 
-**3.** On the iPhone: **Home** → **+** → **Add Accessory** → **More options…** → **HomeKit Alchemy** → enter the code.
+**3.** On the iPhone: **Home** → **+** → **Add Accessory** → scan the QR code from the notification. Or tap **More options…** → **HomeKit Alchemy** → enter the code.
 
 <!-- screenshot: Add Accessory list showing "HomeKit Alchemy" -->
 

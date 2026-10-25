@@ -6,6 +6,7 @@
   ],
   "config_flow": true,
   "dependencies": [
+    "http",
     "network",
     "zeroconf"
   ],
@@ -17,7 +18,9 @@
     "pyhap"
   ],
   "requirements": [
-    "HAP-python>=5.0.0"
+    "HAP-python>=5.0.0",
+    "PyQRCode>=1.2.1",
+    "base36>=0.1.1"
   ],
   "version": "0.1.0"
 }
