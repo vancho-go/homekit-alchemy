@@ -41,13 +41,21 @@ def test_fan_compute_and_commands() -> None:
 
     assert behavior.handle({"Active": 0, "RotationSpeed": 30}, view) == [Command("fan.turn_off", T)]
     assert behavior.handle({"Active": 1, "RotationSpeed": 30}, view) == [
-        Command("fan.set_percentage", T, {"percentage": 30})
+        Command("fan.set_percentage", T, {"percentage": 33})
     ]
     assert behavior.handle({"Active": 1}, view) == [Command("fan.turn_on", T)]
     assert behavior.handle({"SwingMode": 1, "RotationDirection": 1}, view) == [
         Command("fan.oscillate", T, {"oscillating": True}),
         Command("fan.set_direction", T, {"direction": "reverse"}),
     ]
+
+
+def test_speed_snaps_to_step() -> None:
+    # 3 speeds: 67 % would round up to speed 3 in HA, so speed 2 must be sent as 66 %.
+    behavior = main_block("fan.f", FULL).behavior
+    view = FakeView({"fan.f": ("on", FULL)})
+    sent = [behavior.handle({"RotationSpeed": v}, view)[0].data["percentage"] for v in (33.33, 66.66, 99.99, 100)]
+    assert sent == [33, 66, 100, 100]
 
 
 def test_preset_switch() -> None:

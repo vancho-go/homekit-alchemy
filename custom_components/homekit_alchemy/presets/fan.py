@@ -7,6 +7,7 @@ preset as the native auto toggle, other presets as linked switches.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping
 from typing import Any
 
@@ -96,7 +97,8 @@ class FanBehavior(Behavior):
             direction = DIRECTION_REVERSE if changes["RotationDirection"] else DIRECTION_FORWARD
             commands.append(Command("fan.set_direction", target, {"direction": direction}))
         if self.has_speed and changes.get("RotationSpeed"):
-            commands.append(Command("fan.set_percentage", target, {"percentage": round(changes["RotationSpeed"])}))
+            percentage = self.snap_percentage(changes["RotationSpeed"])
+            commands.append(Command("fan.set_percentage", target, {"percentage": percentage}))
         auto = changes.get("TargetAirPurifierState" if self.purifier else "TargetFanState")
         if auto is not None and self.auto_preset is not None:
             if auto:
@@ -106,6 +108,17 @@ class FanBehavior(Behavior):
                 percentage = to_float(state.attributes.get("percentage")) if state else None
                 commands.append(Command("fan.turn_on", target, {"percentage": percentage or 50}))
         return commands
+
+    def snap_percentage(self, value: float) -> int:
+        """Apple's slider value -> a whole percentage that lands on the intended speed.
+
+        Fans map percentage to speed by rounding up, so 3 speeds turn 67 % into
+        speed 3: round to the step, then down (66 %), as HA's own bridge does.
+        """
+        speed = round(value / self.speed_step)
+        if speed >= round(100 / self.speed_step):
+            return 100
+        return max(1, math.floor(speed * self.speed_step + 1e-6))
 
 
 class FanPresetBehavior(Behavior):
