@@ -1,9 +1,6 @@
 {
   "domain": "homekit_alchemy",
   "name": "HomeKit Alchemy",
-  "categories": [
-    "other_ecosystems"
-  ],
   "codeowners": [
     "@vancho-go"
   ],
