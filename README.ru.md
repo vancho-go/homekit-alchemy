@@ -533,6 +533,16 @@ logger:
 
 ---
 
+## 🤝 Участие в разработке
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -r requirements_test.txt
+.venv/bin/python -m pytest
+```
+
+Issues и pull request'ы приветствуются.
+
 ## 📄 Лицензия
 
 [MIT](LICENSE)

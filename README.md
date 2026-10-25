@@ -533,6 +533,16 @@ Tested on Home Assistant 2026.10 and iOS 26. Reports from your devices are very 
 
 ---
 
+## 🤝 Contributing
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -r requirements_test.txt
+.venv/bin/python -m pytest
+```
+
+Issues and pull requests are welcome.
+
 ## 📄 License
 
 [MIT](LICENSE)
