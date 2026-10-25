@@ -353,8 +353,8 @@ buttons:
 | `climate` | `heater_cooler`, если умеет охлаждать, иначе `thermostat` | `thermostat`, `heater_cooler` | `current_temperature`, `current_humidity`¹, `min_temp`, `max_temp`, `temperature_step` |
 | `water_heater` | термостат (выкл / нагрев) | — | `current_temperature`, `min_temp`, `max_temp` |
 | `cover` | штора, либо `window` / `door` / `garage_door` по `device_class` | `window_covering`, `window`, `door`, `garage_door` | `state`, `open`, `close`, `stop`, `obstruction` |
-| `fan` | вентилятор (скорость, направление, качание, пресеты переключателями) | `air_purifier` | — |
-| `humidifier` | увлажнитель или осушитель (режимы переключателями) | — | `current_humidity` |
+| `fan` | вентилятор (скорость, направление, качание, пресеты переключателями) | `air_purifier` | `presets` |
+| `humidifier` | увлажнитель или осушитель (режимы переключателями) | — | `current_humidity`, `presets` |
 | `lock` | замок | — | `code` |
 | `valve` | кран | `sprinkler`, `shower`, `faucet` | — |
 | `alarm_control_panel` | охрана (дома / не дома / ночь / выкл) | — | `code` |
@@ -365,6 +365,18 @@ buttons:
 ¹ только для `thermostat`; для `heater_cooler` добавьте `sensors: - type: humidity`.
 
 </details>
+
+### 🎚️ Режимы вентиляторов и увлажнителей
+
+Их режимы становятся переключателями с названиями из Home Assistant. Переименовать, упорядочить или скрыть их можно через `presets:` — показываются только перечисленные:
+
+```yaml
+humidifier.bedroom:
+  presets:
+    Constant Humidity: Постоянная влажность
+    Sleep: Сон
+    Strong: Сильный        # «Off» не указан — не показывается
+```
 
 ### ❄️ Климат
 

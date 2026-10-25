@@ -46,6 +46,7 @@ CONF_RANGES = "ranges"
 CONF_SET = "set"
 CONF_STEP = "step"
 CONF_SOURCES = "sources"
+CONF_PRESETS = "presets"
 CONF_REMOTE_KEYS = "remote_keys"
 REMOTE_KEY_NAMES = (
     "arrow_up", "arrow_down", "arrow_left", "arrow_right", "select", "back", "exit",
@@ -315,6 +316,7 @@ ENTITY_SCHEMA = vol.Schema(
         vol.Optional(CONF_OBSTRUCTION): source,
         vol.Optional(CONF_CODE): cv.string,
         vol.Optional(CONF_SOURCES): options,
+        vol.Optional(CONF_PRESETS): options,
         vol.Optional(CONF_REMOTE_KEYS): {vol.In(REMOTE_KEY_NAMES): command},
         vol.Optional(CONF_SENSORS, default=[]): [sensor],
         vol.Optional(CONF_SWITCHES, default=[]): [switch],
@@ -344,6 +346,7 @@ def entity_config(value: Any) -> EntityConfig:
         obstruction=value.get(CONF_OBSTRUCTION),
         code=value.get(CONF_CODE),
         sources=value.get(CONF_SOURCES),
+        presets=value.get(CONF_PRESETS),
         remote_keys=value.get(CONF_REMOTE_KEYS),
         sensors=tuple(value[CONF_SENSORS]),
         switches=tuple(value[CONF_SWITCHES]),

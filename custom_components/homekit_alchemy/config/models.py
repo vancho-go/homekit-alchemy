@@ -80,6 +80,7 @@ class EntityConfig:
     code: str | None = None
     sources: tuple[tuple[str, str], ...] | None = None
     remote_keys: dict[str, Command] | None = None
+    presets: tuple[tuple[str, str], ...] | None = None
     sensors: tuple[SensorConfig, ...] = ()
     switches: tuple[SwitchConfig, ...] = ()
     ranges: tuple[RangeConfig, ...] = ()

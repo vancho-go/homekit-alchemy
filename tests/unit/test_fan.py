@@ -86,3 +86,10 @@ def test_pm_and_filter_sensors() -> None:
     assert SENSOR_TYPES["filter_change"].create(Source(entity_id="binary_sensor.f")).compute(view) == {
         "FilterChangeIndication": 0,
     }
+
+
+def test_fan_presets_renamed() -> None:
+    from custom_components.homekit_alchemy.presets.registry import MainOverrides
+
+    main = main_block("fan.f", FULL, overrides=MainOverrides(presets=(("sleep", "Сон"), ("smart", "Умный"))))
+    assert [(e.key, e.name) for e in main.extras] == [("fan:preset:sleep", "Сон"), ("fan:preset:smart", "Умный")]

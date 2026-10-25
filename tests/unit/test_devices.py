@@ -100,3 +100,18 @@ def test_activate_only() -> None:
     assert main_block("button.ring", {}).behavior.handle({"On": 1}, view) == [
         Command("button.press", {"entity_id": "button.ring"})
     ]
+
+
+def test_humidifier_presets_renamed_and_hidden() -> None:
+    attrs = {"device_class": "humidifier", "available_modes": ["Off", "Constant Humidity", "Sleep", "Strong"], "mode": "Sleep"}
+    presets = (("Sleep", "Сон"), ("Constant Humidity", "Постоянная влажность"))
+    main = main_block("humidifier.h", attrs, overrides=MainOverrides(presets=presets))
+    assert [(e.key, e.name) for e in main.extras] == [
+        ("humidifier:mode:sleep", "Сон"),
+        ("humidifier:mode:constant_humidity", "Постоянная влажность"),
+    ]
+    import pytest
+    from custom_components.homekit_alchemy.presets.registry import UnsupportedEntity
+
+    with pytest.raises(UnsupportedEntity):
+        main_block("humidifier.h", attrs, overrides=MainOverrides(presets=(("Turbo", "Турбо"),)))

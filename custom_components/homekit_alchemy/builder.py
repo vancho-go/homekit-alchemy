@@ -99,6 +99,7 @@ def build_device(
             CoverOverrides(open=cfg.open, close=cfg.close, stop=cfg.stop, obstruction=cfg.obstruction),
             code=cfg.code,
             sources=cfg.sources,
+            presets=cfg.presets,
             remote_keys=cfg.remote_keys,
         ),
         temperature_unit=hass.config.units.temperature_unit,

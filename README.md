@@ -353,8 +353,8 @@ The type is chosen automatically; set `type:` to show an entity differently.
 | `climate` | `heater_cooler` if it can cool, otherwise `thermostat` | `thermostat`, `heater_cooler` | `current_temperature`, `current_humidity`¹, `min_temp`, `max_temp`, `temperature_step` |
 | `water_heater` | thermostat (off / heat) | — | `current_temperature`, `min_temp`, `max_temp` |
 | `cover` | blind, or `window` / `door` / `garage_door` by `device_class` | `window_covering`, `window`, `door`, `garage_door` | `state`, `open`, `close`, `stop`, `obstruction` |
-| `fan` | fan (speed, direction, oscillation, presets as switches) | `air_purifier` | — |
-| `humidifier` | humidifier or dehumidifier (modes as switches) | — | `current_humidity` |
+| `fan` | fan (speed, direction, oscillation, presets as switches) | `air_purifier` | `presets` |
+| `humidifier` | humidifier or dehumidifier (modes as switches) | — | `current_humidity`, `presets` |
 | `lock` | lock | — | `code` |
 | `valve` | valve | `sprinkler`, `shower`, `faucet` | — |
 | `alarm_control_panel` | security system (home / away / night / off) | — | `code` |
@@ -365,6 +365,18 @@ The type is chosen automatically; set `type:` to show an entity differently.
 ¹ only for `thermostat`; for `heater_cooler` add `sensors: - type: humidity`.
 
 </details>
+
+### 🎚️ Presets of fans and humidifiers
+
+Their modes become switches named as in Home Assistant. Rename, reorder or hide them with `presets:` (only the listed ones are shown):
+
+```yaml
+humidifier.bedroom:
+  presets:
+    Constant Humidity: Constant
+    Sleep: Night
+    Strong: Turbo          # "Off" is not listed, so it is hidden
+```
 
 ### ❄️ Climate
 

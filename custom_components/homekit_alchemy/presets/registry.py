@@ -67,6 +67,7 @@ class MainOverrides:
     code: str | None = None  # lock / alarm code
     sources: tuple[tuple[str, str], ...] | None = None  # media_player inputs (value, label)
     remote_keys: Mapping[str, Command] | None = None  # media_player remote key -> command
+    presets: tuple[tuple[str, str], ...] | None = None  # fan / humidifier modes to show: (value, label)
 
 
 @dataclass(frozen=True)
@@ -193,9 +194,10 @@ def main_block(
 
     if domain == "humidifier":
         behavior = HumidifierBehavior(entity_id, attributes, overrides.climate.current_humidity)
+        available = [str(m) for m in attributes.get("available_modes") or []]
         modes = tuple(
-            ExtraBlock(HumidifierModeBehavior.key(m), "Switch", HumidifierModeBehavior(entity_id, m), name=str(m))
-            for m in attributes.get("available_modes") or []
+            ExtraBlock(HumidifierModeBehavior.key(m), "Switch", HumidifierModeBehavior(entity_id, m), name=label)
+            for m, label in _pick_presets(available, overrides.presets)
         )
         category = "dehumidifier" if attributes.get("device_class") == "dehumidifier" else "humidifier"
         return MainBlock(category, "HumidifierDehumidifier", behavior, modes)
@@ -224,8 +226,8 @@ def main_block(
         purifier = type_ == "air_purifier"
         fan = FanBehavior(entity_id, attributes, purifier=purifier)
         presets = tuple(
-            ExtraBlock(FanPresetBehavior.key(p), "Switch", FanPresetBehavior(entity_id, p), name=str(p))
-            for p in fan.switch_presets
+            ExtraBlock(FanPresetBehavior.key(p), "Switch", FanPresetBehavior(entity_id, p), name=label)
+            for p, label in _pick_presets([str(p) for p in fan.switch_presets], overrides.presets)
         )
         if purifier:
             return MainBlock("air_purifier", "AirPurifier", fan, presets, PURIFIER_LINKED_SENSORS)
@@ -308,3 +310,14 @@ def _media_player(
     behavior = TelevisionMediaBehavior(entity_id, attributes, sources, overrides.remote_keys)
     category = "receiver" if type_ == "receiver" else "television"
     return MainBlock(category, "Television", behavior, tuple(extras), standalone=True)
+
+
+def _pick_presets(
+    available: list[str], wanted: tuple[tuple[str, str], ...] | None
+) -> list[tuple[str, str]]:
+    """Modes shown as switches: all of them, or only the configured ones with their labels."""
+    if wanted is None:
+        return [(m, m) for m in available]
+    if unknown := [value for value, _ in wanted if value not in available]:
+        raise UnsupportedEntity(f"unknown presets {unknown}; available: {available}")
+    return list(wanted)
