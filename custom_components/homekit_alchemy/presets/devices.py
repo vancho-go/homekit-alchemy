@@ -55,7 +55,9 @@ class HumidifierBehavior(Behavior):
                 {"ValidValues": {name: self.mode}, "minValue": self.mode, "maxValue": self.mode},
             ),
             FieldSpec("CurrentRelativeHumidity"),
-            FieldSpec(self.threshold, {"minValue": self.min_humidity, "maxValue": self.max_humidity, "minStep": 1}),
+            # Full 0–100 % scale like HA's bridge: Apple Home draws a narrower range badly.
+            # Out-of-range writes are clamped in handle() and resynced.
+            FieldSpec(self.threshold, {"minValue": 0, "maxValue": 100, "minStep": 1}),
         ]
 
     def sources(self) -> list[Source]:
@@ -79,7 +81,7 @@ class HumidifierBehavior(Behavior):
         if (current := to_float(raw)) is not None:
             values["CurrentRelativeHumidity"] = round(clamp(current, 0, 100))
         if (target := to_float(attrs.get("humidity"))) is not None:
-            values[self.threshold] = round(clamp(target, self.min_humidity, self.max_humidity))
+            values[self.threshold] = round(clamp(target, 0, 100))
         return values
 
     def handle(self, changes: dict[str, Any], view: StateView) -> list[Command]:

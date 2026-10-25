@@ -14,7 +14,8 @@ def test_humidifier_and_modes() -> None:
              "min_humidity": 30, "max_humidity": 80, "available_modes": ["home", "eco"], "mode": "eco"}
     main = main_block("humidifier.h", attrs)
     assert (main.service, main.category) == ("HumidifierDehumidifier", "humidifier")
-    assert _fields(main)["RelativeHumidityHumidifierThreshold"] == {"minValue": 30, "maxValue": 80, "minStep": 1}
+    assert _fields(main)["RelativeHumidityHumidifierThreshold"] == {"minValue": 0, "maxValue": 100, "minStep": 1}
+    assert main.linked_sensor_types == {"filter_life", "filter_change"}
     view = FakeView({"humidifier.h": ("on", attrs)})
     assert main.behavior.compute(view) == {
         "Active": 1, "TargetHumidifierDehumidifierState": 1, "CurrentHumidifierDehumidifierState": 2,

@@ -52,6 +52,7 @@ FAN_TYPES = {"fan", "air_purifier"}
 MEDIA_TYPES = {"television", "receiver", "switch"}
 FEATURE_SELECT_SOURCE = 2048
 # Extra sensors Apple shows inside an air purifier when linked to it.
+HUMIDIFIER_LINKED_SENSORS = frozenset({"filter_life", "filter_change"})
 PURIFIER_LINKED_SENSORS = frozenset({"pm25", "pm10", "temperature", "humidity", "filter_life", "filter_change"})
 
 
@@ -200,7 +201,7 @@ def main_block(
             for m, label in _pick_presets(available, overrides.presets)
         )
         category = "dehumidifier" if attributes.get("device_class") == "dehumidifier" else "humidifier"
-        return MainBlock(category, "HumidifierDehumidifier", behavior, modes)
+        return MainBlock(category, "HumidifierDehumidifier", behavior, modes, HUMIDIFIER_LINKED_SENSORS)
 
     if domain == "valve" or (type_ in VALVE_TYPES and domain in ONOFF_DOMAINS):
         type_ = type_ or "valve"
