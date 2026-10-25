@@ -13,6 +13,7 @@ from .climate import (
     ClimateFanBehavior,
     ClimateOverrides,
     HeaterCoolerBehavior,
+    SwitchThermostatBehavior,
     ThermostatBehavior,
     WaterHeaterBehavior,
 )
@@ -43,10 +44,12 @@ from .sensor import (
     SENSOR_DEVICE_CLASSES,
     SENSOR_TYPES,
 )
-from .switch import ONOFF_SERVICES, OnOffBehavior
+from .switch import ONOFF_SERVICES, FanPowerBehavior, OnOffBehavior
 
 ONOFF_DOMAINS = {"switch", "input_boolean"}
 ONOFF_TYPES = set(ONOFF_SERVICES)
+# On/off entities that may take the shape of any simple Apple device.
+SHAPE_DOMAINS = ONOFF_DOMAINS | {"light"}
 CLIMATE_TYPES = {"thermostat", "heater_cooler"}
 FAN_TYPES = {"fan", "air_purifier"}
 MEDIA_TYPES = {"television", "receiver", "switch"}
@@ -101,12 +104,10 @@ class UnsupportedEntity(ValueError):
 
 def supported_types(domain: str) -> set[str]:
     """`type:` values allowed for a domain (for config validation messages)."""
-    if domain in ONOFF_DOMAINS:
-        return ONOFF_TYPES | set(COVER_TYPES) | set(VALVE_TYPES)
+    if domain in SHAPE_DOMAINS:
+        return ONOFF_TYPES | set(COVER_TYPES) | set(VALVE_TYPES) | {"fan", "thermostat"}
     if domain == "valve":
         return set(VALVE_TYPES)
-    if domain == "light":
-        return ONOFF_TYPES
     if domain in ("sensor", "binary_sensor"):
         return set(SENSOR_TYPES) - {"battery"}
     if domain == "climate":
@@ -149,7 +150,23 @@ def main_block(
         behavior = ThermostatBehavior(entity_id, attributes, temperature_unit, overrides.climate)
         return MainBlock("thermostat", "Thermostat", behavior, tuple(extras))
 
-    if domain == "cover" or (type_ in COVER_TYPES and domain in ONOFF_DOMAINS):
+    if domain in SHAPE_DOMAINS and type_ in ("fan", "thermostat"):
+        default = OnOffBehavior.for_entity(entity_id)
+        power, turn_on, turn_off = (
+            overrides.state or default.state,
+            overrides.turn_on or default.turn_on,
+            overrides.turn_off or default.turn_off,
+        )
+        if type_ == "fan":
+            return MainBlock("fan", "Fanv2", FanPowerBehavior(power, turn_on, turn_off))
+        if overrides.climate.target_temperature is None:
+            raise UnsupportedEntity("type 'thermostat' for an on/off entity needs 'target_temperature'")
+        behavior = SwitchThermostatBehavior(
+            power, turn_on, turn_off, overrides.climate.target_temperature, overrides.climate, temperature_unit
+        )
+        return MainBlock("thermostat", "Thermostat", behavior)
+
+    if domain == "cover" or (type_ in COVER_TYPES and domain in SHAPE_DOMAINS):
         type_ = type_ or default_cover_type(attributes)
         if type_ not in COVER_TYPES:
             raise UnsupportedEntity(f"type '{type_}' is not available for cover")
@@ -203,7 +220,7 @@ def main_block(
         category = "dehumidifier" if attributes.get("device_class") == "dehumidifier" else "humidifier"
         return MainBlock(category, "HumidifierDehumidifier", behavior, modes, HUMIDIFIER_LINKED_SENSORS)
 
-    if domain == "valve" or (type_ in VALVE_TYPES and domain in ONOFF_DOMAINS):
+    if domain == "valve" or (type_ in VALVE_TYPES and domain in SHAPE_DOMAINS):
         type_ = type_ or "valve"
         if type_ not in VALVE_TYPES:
             raise UnsupportedEntity(f"type '{type_}' is not available for {domain}")

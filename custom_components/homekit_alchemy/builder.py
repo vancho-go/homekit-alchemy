@@ -80,12 +80,15 @@ def build_device(
     state = hass.states.get(entity_id)
     if state is None:
         raise UnsupportedEntity("entity not found")
+    # An assembled thermostat takes its limits from the target number entity by default.
+    target_attrs = _attributes(hass, cfg.target_temperature) if cfg.target_temperature else {}
     climate = ClimateOverrides(
         current_temperature=cfg.current_temperature,
         current_humidity=cfg.current_humidity,
-        min_temp=cfg.min_temp,
-        max_temp=cfg.max_temp,
-        temperature_step=cfg.temperature_step,
+        min_temp=cfg.min_temp if cfg.min_temp is not None else target_attrs.get("min"),
+        max_temp=cfg.max_temp if cfg.max_temp is not None else target_attrs.get("max"),
+        temperature_step=cfg.temperature_step or target_attrs.get("step"),
+        target_temperature=cfg.target_temperature,
     )
     main = main_block(
         entity_id,

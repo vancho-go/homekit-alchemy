@@ -26,6 +26,7 @@ CONF_ACTION = "action"
 CONF_ATTRIBUTE = "attribute"
 CONF_CURRENT_HUMIDITY = "current_humidity"
 CONF_CURRENT_TEMPERATURE = "current_temperature"
+CONF_TARGET_TEMPERATURE = "target_temperature"
 CONF_MAX_TEMP = "max_temp"
 CONF_MIN_TEMP = "min_temp"
 CONF_OPEN = "open"
@@ -307,6 +308,7 @@ ENTITY_SCHEMA = vol.Schema(
         vol.Optional(CONF_TURN_OFF): command,
         vol.Optional(CONF_CURRENT_TEMPERATURE): source,
         vol.Optional(CONF_CURRENT_HUMIDITY): source,
+        vol.Optional(CONF_TARGET_TEMPERATURE): vol.All(cv.entity_id, cv.entity_domain(["number", "input_number"])),
         vol.Optional(CONF_MIN_TEMP): vol.Coerce(float),
         vol.Optional(CONF_MAX_TEMP): vol.Coerce(float),
         vol.Optional(CONF_TEMPERATURE_STEP): vol.All(vol.Coerce(float), vol.Range(min=0.1)),
@@ -337,6 +339,7 @@ def entity_config(value: Any) -> EntityConfig:
         turn_off=value.get(CONF_TURN_OFF),
         current_temperature=value.get(CONF_CURRENT_TEMPERATURE),
         current_humidity=value.get(CONF_CURRENT_HUMIDITY),
+        target_temperature=value.get(CONF_TARGET_TEMPERATURE),
         min_temp=value.get(CONF_MIN_TEMP),
         max_temp=value.get(CONF_MAX_TEMP),
         temperature_step=value.get(CONF_TEMPERATURE_STEP),

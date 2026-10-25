@@ -61,3 +61,17 @@ class OnOffBehavior(Behavior):
         self._last = bool(changes["On"])
         command = self.turn_on if changes["On"] else self.turn_off
         return [command] if command else []
+
+
+class FanPowerBehavior(OnOffBehavior):
+    """Any on/off entity shown as a fan (e.g. a bathroom exhaust on a relay)."""
+
+    def fields(self) -> list[FieldSpec]:
+        return [FieldSpec("Active")]
+
+    def compute(self, view: StateView) -> dict[str, Any]:
+        values = super().compute(view)
+        return {"Active": int(values["On"])} if "On" in values else {}
+
+    def handle(self, changes: dict[str, Any], view: StateView) -> list[Command]:
+        return super().handle({"On": changes["Active"]}, view) if "Active" in changes else []

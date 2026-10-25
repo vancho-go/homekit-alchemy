@@ -430,3 +430,33 @@ async def test_pairing_notification_has_qr_and_code(
     assert response.status == 200 and response.content_type == "image/svg+xml"
     assert (await client.get(url[:-4] + "0000")).status == 401
     assert (await client.get(f"/api/{DOMAIN}/pairingqr")).status == 401
+
+
+async def test_assembled_thermostat_from_yaml(hass: HomeAssistant, bridge_env: None) -> None:
+    hass.states.async_set("switch.rail", "on")
+    hass.states.async_set("sensor.rail_temp", "41")
+    hass.states.async_set("number.rail_target", "30", {"min": 0, "max": 100, "step": 1})
+    set_value = async_mock_service(hass, "number", "set_value")
+    manager = await _setup(
+        hass,
+        {
+            "port": 51880,
+            "entity_config": {
+                "switch.rail": {
+                    "type": "thermostat",
+                    "current_temperature": "sensor.rail_temp",
+                    "target_temperature": "number.rail_target",
+                    "max_temp": 60,
+                }
+            },
+        },
+    )
+    rail = _by_entity(manager)["switch.rail"]
+    chars = rail._chars["main"]
+    assert chars["TargetTemperature"].properties["minValue"] == 0  # from the number entity
+    assert chars["TargetTemperature"].properties["maxValue"] == 60  # overridden in YAML
+    assert chars["CurrentTemperature"].value == 41
+
+    rail.get_service("Thermostat").setter_callback({"TargetTemperature": 45})
+    await hass.async_block_till_done()
+    assert set_value[0].data == {"entity_id": "number.rail_target", "value": 45}

@@ -70,6 +70,7 @@ class EntityConfig:
     turn_off: Command | None = None
     current_temperature: Source | None = None
     current_humidity: Source | None = None
+    target_temperature: str | None = None
     min_temp: float | None = None
     max_temp: float | None = None
     temperature_step: float | None = None

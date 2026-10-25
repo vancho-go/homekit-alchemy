@@ -15,7 +15,7 @@ from typing import Any
 
 from ..model.behavior import Behavior, FieldSpec, StateView
 from ..model.binding import Command, Source
-from .convert import celsius_to_fahrenheit, fahrenheit_to_celsius, to_float
+from .convert import celsius_to_fahrenheit, fahrenheit_to_celsius, to_bool, to_float
 
 FAHRENHEIT = "°F"
 
@@ -47,6 +47,7 @@ class ClimateOverrides:
     min_temp: float | None = None
     max_temp: float | None = None
     temperature_step: float | None = None
+    target_temperature: str | None = None  # number entity: target of an assembled thermostat
 
 
 class _ClimateBase(Behavior):
@@ -450,4 +451,82 @@ class WaterHeaterBehavior(_ClimateBase):
             commands.append(
                 Command("water_heater.set_temperature", target, {"temperature": self._from_c(changes["TargetTemperature"])})
             )
+        return commands
+
+
+class SwitchThermostatBehavior(Behavior):
+    """A thermostat assembled from parts: an on/off entity (power), a temperature
+    reading and a number entity with the target temperature (e.g. a towel rail)."""
+
+    def __init__(
+        self,
+        power: Source,
+        turn_on: Command,
+        turn_off: Command,
+        target_entity: str,
+        overrides: ClimateOverrides,
+        temperature_unit: str = "°C",
+    ) -> None:
+        self.power = power
+        self.turn_on = turn_on
+        self.turn_off = turn_off
+        self.target_entity = target_entity
+        self.overrides = overrides
+        self.unit = temperature_unit
+        low = overrides.min_temp if overrides.min_temp is not None else DEFAULT_MIN_TEMP
+        high = overrides.max_temp if overrides.max_temp is not None else DEFAULT_MAX_TEMP
+        self.min_temp, self.max_temp = max(0.0, min(low, high)), max(low, high)
+        self.step = overrides.temperature_step or 1
+
+    def fields(self) -> list[FieldSpec]:
+        props = {"minValue": self.min_temp, "maxValue": self.max_temp, "minStep": self.step}
+        fields = [
+            FieldSpec("CurrentHeatingCoolingState"),
+            FieldSpec("TargetHeatingCoolingState", {"ValidValues": {"Off": TH_OFF, "Heat": TH_HEAT}}),
+            FieldSpec("CurrentTemperature", CURRENT_TEMPERATURE_PROPS),
+            FieldSpec("TargetTemperature", props),
+            FieldSpec("TemperatureDisplayUnits"),
+        ]
+        return fields
+
+    def sources(self) -> list[Source]:
+        sources = [self.power, Source(entity_id=self.target_entity)]
+        if self.overrides.current_temperature:
+            sources.append(self.overrides.current_temperature)
+        return sources
+
+    def _c(self, value: Any) -> float | None:
+        number = to_float(value)
+        if number is None:
+            return None
+        return fahrenheit_to_celsius(number) if self.unit == FAHRENHEIT else number
+
+    def compute(self, view: StateView) -> dict[str, Any]:
+        is_on = to_bool(view.value(self.power))
+        if is_on is None:
+            return {}
+        values: dict[str, Any] = {
+            "TemperatureDisplayUnits": int(self.unit == FAHRENHEIT),
+            "TargetHeatingCoolingState": TH_HEAT if is_on else TH_OFF,
+        }
+        current = self._c(view.value(self.overrides.current_temperature)) if self.overrides.current_temperature else None
+        if current is not None:
+            values["CurrentTemperature"] = round(current, 1)
+        target = self._c(view.value(Source(entity_id=self.target_entity)))
+        if target is not None:
+            values["TargetTemperature"] = round(max(self.min_temp, min(self.max_temp, target)), 1)
+        heating = is_on and (current is None or target is None or current < target)
+        values["CurrentHeatingCoolingState"] = TH_HEAT if heating else TH_OFF
+        return values
+
+    def handle(self, changes: dict[str, Any], view: StateView) -> list[Command]:
+        commands: list[Command] = []
+        if "TargetHeatingCoolingState" in changes:
+            commands.append(self.turn_on if changes["TargetHeatingCoolingState"] else self.turn_off)
+        if "TargetTemperature" in changes:
+            value = changes["TargetTemperature"]
+            if self.unit == FAHRENHEIT:
+                value = round(celsius_to_fahrenheit(value))
+            domain = self.target_entity.split(".", 1)[0]
+            commands.append(Command(f"{domain}.set_value", {"entity_id": self.target_entity}, {"value": value}))
         return commands

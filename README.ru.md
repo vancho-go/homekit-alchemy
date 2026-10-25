@@ -346,8 +346,8 @@ buttons:
 
 | Домен | По умолчанию в «Доме» | Другие значения `type:` | Доп. параметры |
 |---|---|---|---|
-| `light` | лампа (яркость, цвет, цветовая температура) | `switch`, `outlet` | `state`, `turn_on`, `turn_off` |
-| `switch`, `input_boolean` | выключатель | `outlet`, `light`, `garage_door`, `window_covering`, `window`, `door`, `valve`, `sprinkler`, `shower`, `faucet` | `state`, `turn_on`, `turn_off`, параметры штор |
+| `light` | лампа (яркость, цвет, цветовая температура) | любой вид из строки ниже | `state`, `turn_on`, `turn_off` |
+| `switch`, `input_boolean` | выключатель | `outlet`, `light`, `fan`, `thermostat`², `garage_door`, `window_covering`, `window`, `door`, `valve`, `sprinkler`, `shower`, `faucet` | `state`, `turn_on`, `turn_off`, параметры штор |
 | `sensor` | по `device_class` | любой тип датчика, кроме `battery` | `state` |
 | `binary_sensor` | по `device_class` (`door`/`window` → открытие, `moisture` → протечка, …) | любой тип детектора | `state` |
 | `climate` | `heater_cooler`, если умеет охлаждать, иначе `thermostat` | `thermostat`, `heater_cooler` | `current_temperature`, `current_humidity`¹, `min_temp`, `max_temp`, `temperature_step` |
@@ -363,6 +363,7 @@ buttons:
 | `event` | программируемый выключатель | — | `buttons` |
 
 ¹ только для `thermostat`; для `heater_cooler` добавьте `sensors: - type: humidity`.
+² термостат, собранный из частей, — см. [рецепт](#полотенцесушитель-как-термостат).
 
 </details>
 
@@ -456,6 +457,31 @@ fan.purifier:
   sensors:
     - { type: pm25, entity: sensor.purifier_pm25 }
     - { type: filter_life, entity: sensor.purifier_filter_life }
+```
+
+#### Полотенцесушитель как термостат
+
+Выключатель питания + датчик температуры + `number` с уставкой → настоящий термостат Apple (выкл / нагрев):
+
+```yaml
+switch.towel_rail:
+  name: Полотенцесушитель
+  type: thermostat
+  current_temperature: sensor.towel_rail_temperature
+  target_temperature: number.towel_rail_target      # number / input_number; пределы берутся из него
+  min_temp: 30                                      # необязательно: сузить шкалу
+  max_temp: 60
+```
+
+#### Реле «наоборот» — кран перекрытия воды
+
+```yaml
+light.water_stop_relay:               # реле включено = вода перекрыта
+  name: Вода
+  type: valve
+  state: "{{ is_state('light.water_stop_relay', 'off') }}"
+  turn_on:  { action: light.turn_off, entity_id: light.water_stop_relay }
+  turn_off: { action: light.turn_on, entity_id: light.water_stop_relay }
 ```
 
 #### Метеостанция

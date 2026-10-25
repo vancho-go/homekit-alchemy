@@ -346,8 +346,8 @@ The type is chosen automatically; set `type:` to show an entity differently.
 
 | Domain | Default in Apple Home | Other `type:` values | Extra options |
 |---|---|---|---|
-| `light` | lightbulb (brightness, color, white temperature) | `switch`, `outlet` | `state`, `turn_on`, `turn_off` |
-| `switch`, `input_boolean` | switch | `outlet`, `light`, `garage_door`, `window_covering`, `window`, `door`, `valve`, `sprinkler`, `shower`, `faucet` | `state`, `turn_on`, `turn_off`, cover options |
+| `light` | lightbulb (brightness, color, white temperature) | any shape below | `state`, `turn_on`, `turn_off` |
+| `switch`, `input_boolean` | switch | `outlet`, `light`, `fan`, `thermostat`², `garage_door`, `window_covering`, `window`, `door`, `valve`, `sprinkler`, `shower`, `faucet` | `state`, `turn_on`, `turn_off`, cover options |
 | `sensor` | by `device_class` | any sensor type except `battery` | `state` |
 | `binary_sensor` | by `device_class` (`door`/`window` → contact, `moisture` → leak, …) | any detector type | `state` |
 | `climate` | `heater_cooler` if it can cool, otherwise `thermostat` | `thermostat`, `heater_cooler` | `current_temperature`, `current_humidity`¹, `min_temp`, `max_temp`, `temperature_step` |
@@ -363,6 +363,7 @@ The type is chosen automatically; set `type:` to show an entity differently.
 | `event` | programmable switch | — | `buttons` |
 
 ¹ only for `thermostat`; for `heater_cooler` add `sensors: - type: humidity`.
+² a thermostat assembled from parts — see the [recipe](#a-towel-rail-as-a-thermostat).
 
 </details>
 
@@ -456,6 +457,31 @@ fan.purifier:
   sensors:
     - { type: pm25, entity: sensor.purifier_pm25 }
     - { type: filter_life, entity: sensor.purifier_filter_life }
+```
+
+#### A towel rail as a thermostat
+
+Power switch + temperature sensor + target `number` → a real Apple thermostat (off / heat):
+
+```yaml
+switch.towel_rail:
+  name: Towel rail
+  type: thermostat
+  current_temperature: sensor.towel_rail_temperature
+  target_temperature: number.towel_rail_target      # number / input_number; limits come from it
+  min_temp: 30                                      # optional: narrower dial
+  max_temp: 60
+```
+
+#### A relay in reverse — water shut-off valve
+
+```yaml
+light.water_stop_relay:               # relay on = water closed
+  name: Water
+  type: valve
+  state: "{{ is_state('light.water_stop_relay', 'off') }}"
+  turn_on:  { action: light.turn_off, entity_id: light.water_stop_relay }
+  turn_off: { action: light.turn_on, entity_id: light.water_stop_relay }
 ```
 
 #### A weather station
